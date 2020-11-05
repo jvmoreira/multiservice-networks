@@ -19,40 +19,131 @@ def nf_stop(token):
     Socket.close()
     return
 
-HIGH_PRIORITY = 10
-MEDIUM_PRIORITY = 5
-LOW_PRIORITY = 0
+class Priority:
+    NORMALIZE_WEIGHTS = 0
 
-PRIORITIES = [HIGH_PRIORITY, MEDIUM_PRIORITY, LOW_PRIORITY]
+    HIGH = 10
+    HIGH_WEIGHT = 4
+    HIGH_WEIGHT_NORMALIZED = int(10 * HIGH_WEIGHT / 13)
 
-QUEUES = { HIGH_PRIORITY: [], MEDIUM_PRIORITY: [], LOW_PRIORITY: [] }
+    MEDIUM = 5
+    MEDIUM_WEIGHT = 2
+    MEDIUM_WEIGHT_NORMALIZED = int(10 * MEDIUM_WEIGHT / 8)
 
-def resetQueues():
-    for priority in PRIORITIES:
-        del QUEUES[priority][:]
+    LOW = 0
+    LOW_WEIGHT = 1
+    LOW_WEIGHT_NORMALIZED = int(10 * LOW_WEIGHT / 3)
 
-def insertRequestWithPriority(request, priority):
-    QUEUES[priority].append(request)
+    PRIORITIES_LIST = [HIGH, MEDIUM, LOW]
 
-def getPriority(content):
-    for priority in PRIORITIES:
-        if len(content) > priority:
-            return priority
+    @classmethod
+    def getWeight(cls, priority):
+        if priority == cls.HIGH:
+            return cls.HIGH_WEIGHT_NORMALIZED if cls.NORMALIZE_WEIGHTS else cls.HIGH_WEIGHT
+        elif priority == cls.MEDIUM:
+            return cls.MEDIUM_WEIGHT_NORMALIZED if cls.NORMALIZE_WEIGHTS else cls.MEDIUM_WEIGHT
+        elif priority == cls.LOW:
+            return cls.LOW_WEIGHT_NORMALIZED if cls.NORMALIZE_WEIGHTS else cls.LOW_WEIGHT
 
-    return LOW_PRIORITY
+    @classmethod
+    def getPriorityAsString(cls, priority):
+        if priority == cls.HIGH:
+            return 'HIGH'
+        elif priority == cls.MEDIUM:
+            return 'MEDIUM'
+        elif priority == cls.LOW:
+            return 'LOW'
 
-def parseRequest(request):
-    return request.split('__')
+    @classmethod
+    def evaluate(cls, content):
+        for priority in cls.PRIORITIES_LIST:
+            if len(content) > priority:
+                return priority
+
+        return LOW
+
+class WeightedRoundRobin:
+    def __init__(self):
+        self.__queues = {
+            Priority.HIGH: [],
+            Priority.MEDIUM: [],
+            Priority.LOW: [],
+        }
+        self.reset()
+
+    @staticmethod
+    def parseRequest(request):
+        return request.split('__')
+
+    def handleNewRequest(self, request):
+        [contentReceived, requestNumber] = WeightedRoundRobin.parseRequest(request)
+        requestPriority = Priority.evaluate(contentReceived)
+
+        self.insertRequestWithPriority(request, requestPriority)
+
+        self.__requestsReceived += 1
+
+    def insertRequestWithPriority(self, request, priority):
+        self.__queues[priority].append(request)
+
+    def receivedAllRequests(self):
+        return self.__requestsReceived >= self.__requestsToReceive
+
+    def received500Req(self):
+        return self.__requestsReceived >= 500
+
+    def reset(self, requestsToReceive = 0):
+        self.outputBuffer = ''
+        self.__resetQueues()
+        self.__requestsReceived = 0
+        self.__requestsToReceive = requestsToReceive if requestsToReceive >= 0 else self.__requestsToReceive
+        print('Reset! Requests to Receive = {}'.format(self.__requestsToReceive))
+
+    def __resetQueues(self):
+        for priority in Priority.PRIORITIES_LIST:
+            del self.__queues[priority][:]
+
+    def printQueues(self):
+        for priority in Priority.PRIORITIES_LIST:
+            queueSize = len( self.__queues[priority] )
+            print('Priority={} | Queue Size={}'.format(priority, queueSize))
+
+    def hasRequestsToProcess(self):
+        highQueueSize = len( self.__queues[Priority.HIGH] )
+        mediumQueueSize = len( self.__queues[Priority.MEDIUM] )
+        lowQueueSize = len( self.__queues[Priority.LOW] )
+        return highQueueSize or mediumQueueSize or lowQueueSize
+
+    def processEnqueuedRequests(self):
+        while self.hasRequestsToProcess():
+            for priority in Priority.PRIORITIES_LIST:
+                queue = self.__queues[priority]
+                self.processRequestsFromQueue(queue, priority)
+
+    def processRequestsFromQueue(self, queue, priority):
+        if not len(queue): return
+
+        queueWeight = Priority.getWeight(priority)
+        priorityName = Priority.getPriorityAsString(priority)
+        priorityNumber = priority / 5
+
+        requestsToProcess = queueWeight if len(queue) >= queueWeight else len(queue)
+        for _ in range(requestsToProcess):
+            request = queue.pop(0)
+            [content, requestNumber] = WeightedRoundRobin.parseRequest(request)
+            contentSize = len(content)
+            requestNumber = int(requestNumber)
+
+            self.outputBuffer += '{};{};{}\n'.format(requestNumber, contentSize, priorityNumber)
+
 
 def nf_main(token):
     print('Server Started')
 
-    requestsToReceive = 0
-    requestsReceived = 0
-    outputBuffer = ''
-
     Socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     Socket.bind(('192.168.122.40', 8005))
+
+    wrr = WeightedRoundRobin()
 
     while(token[0]):
 
@@ -63,25 +154,16 @@ def nf_main(token):
             print('Received: STOP!')
 
         elif '_reset' in requestReceived[0:6]:
-            options = requestReceived.split(' ')[1:]
-            outputBuffer = ''
-            resetQueues()
-            requestsReceived = 0
-            requestsToReceive = int( options[0].split('=')[1] )
-            print('Reset! Requests to Receive = {}'.format(requestsToReceive))
+            requestsToReceiveOption = requestReceived.split(' ')[1]
+            requestsToReceive = int( requestsToReceiveOption.split('=')[1] )
+
+            wrr.reset(requestsToReceive = requestsToReceive)
 
         else:
-            [contentReceived, requestNumber] = parseRequest(requestReceived)
-            requestPriority = getPriority(contentReceived)
+            wrr.handleNewRequest(requestReceived)
 
-            insertRequestWithPriority(requestReceived, requestPriority)
-
-            requestsReceived += 1
-
-            if requestsReceived >= requestsToReceive:
-                for priority in PRIORITIES:
-                    print('Priority = {} | Queue Size = {}'.format(priority, len(QUEUES[priority])))
-
-            #print('Received = {}{} | Size = {:02d} | Bucket = {:02d} | From = {}'.format(contentReceived, padding, bytesReceived, bucket, originAddress))
-
-            #Socket.sendto(outputBuffer, originAddress)
+            if wrr.receivedAllRequests():
+                wrr.printQueues()
+                wrr.processEnqueuedRequests()
+                Socket.sendto(wrr.outputBuffer, originAddress)
+                # wrr.reset(-1)
