@@ -41,7 +41,9 @@ while(requestsSent < MAX_REQUESTS):
     if SLEEP_ENABLED: time.sleep(TIME_BETWEEN_REQUESTS)
 
 [outputBuffer, _] = Socket.recvfrom(65000)
-arquivoSaida.write(outputBuffer.decode())
+while '_EOF' not in outputBuffer:
+    arquivoSaida.write(outputBuffer.decode())
+    [outputBuffer, _] = Socket.recvfrom(65000)
 
 arquivoSaida.close()
 Socket.close()

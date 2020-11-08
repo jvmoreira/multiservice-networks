@@ -193,5 +193,9 @@ def nf_main(token):
             if wrr.receivedAllRequests():
                 wrr.printQueues()
                 wrr.processEnqueuedRequests()
-                Socket.sendto(wrr.outputBuffer, originAddress)
+                chunkSize = 9125
+                outputBufferChunks = [ wrr.outputBuffer[i:i+chunkSize] for i in range(0, len(wrr.outputBuffer), chunkSize) ]
+                for chunk in outputBufferChunks:
+                    Socket.sendto(chunk, originAddress)
+                Socket.sendto("_EOF", originAddress)
                 # wrr.reset()
