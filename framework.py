@@ -7,12 +7,11 @@ with open('framework.config.json', 'r') as config_file:
     config = json.load(config_file)
 
     try:
-        network_category = config['category']
         network_function = NetworkFunctionResolver.resolve(config['function'])
 
         NetworkFunctionValidator.validate(network_function, config)
 
-        script = NetworkFunctionScriptResolver.resolve(network_category, network_function, config)
+        script = NetworkFunctionScriptResolver.resolve(network_function, config)
 
         output_file = open('{}-nf.py'.format(config['function']), 'w')
         output_file.write(script)
