@@ -1,0 +1,15 @@
+{
+  "function": "token-bucket",
+  "category": "shaping",
+  "host_address": "'127.0.0.1'",
+  "target_address": 0,
+
+  "bucket_max_size": 30,
+  "interval": 0.3,
+
+  "packets_to_release": 3,
+
+  "rate":  2,
+  "bucket_size": 20,
+  "queue_max_size":  20
+}
