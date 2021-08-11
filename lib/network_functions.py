@@ -1,5 +1,6 @@
 class NetworkFunction:
     SHAPING_CATEGORY = 'shaping'
+    POLICING_CATEGORY = 'policing'
 
     @classmethod
     def getName(cls):
@@ -42,6 +43,8 @@ class TokenBucket(NetworkFunction):
     def getParameters(cls, network_category):
         if network_category == NetworkFunction.SHAPING_CATEGORY:
             return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'queue_max_size', 'host_address', 'target_address']
+        if network_category == NetworkFunction.POLICING_CATEGORY:
+            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'host_address', 'target_address']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
