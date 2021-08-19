@@ -51,3 +51,35 @@ class TokenBucket(NetworkFunction):
     @classmethod
     def getScript(cls):
         return 'token-bucket.py'
+
+class OneRateThreeColor(NetworkFunction):
+    @classmethod
+    def getName(cls):
+        return 'One Rate Three Color'
+
+    @classmethod
+    def getParameters(cls, network_category):
+        if network_category == NetworkFunction.POLICING_CATEGORY:
+            return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'host_address', 'target_address']
+
+        cls.raiseInvalidNetworkCategoryError(network_category)
+
+    @classmethod
+    def getScript(cls):
+        return 'one-rate-three-color.py'
+
+class TwoRateThreeColor(NetworkFunction):
+    @classmethod
+    def getName(cls):
+        return 'Two Rate Three Color'
+
+    @classmethod
+    def getParameters(cls, network_category):
+        if network_category == NetworkFunction.POLICING_CATEGORY:
+            return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'host_address', 'target_address']
+
+        cls.raiseInvalidNetworkCategoryError(network_category)
+
+    @classmethod
+    def getScript(cls):
+        return 'two-rate-three-color.py'
