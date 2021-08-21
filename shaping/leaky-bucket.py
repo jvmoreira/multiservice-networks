@@ -1,13 +1,16 @@
+import sys
+sys.path.append('../src/')
 import threading #thread module imported
 import time #time module
 import socket
+import packetProcessing as pp
 
 def consumeBucket():
-    global bucket, packets_to_release, Socket
+    global bucket, packets_to_release, Socket, debug
     if (len(bucket) == 0):
         return
     while (len(bucket)) and (packets_to_release > 0):
-        print("Transmitindo pacote " + str(bucket.pop(0)))
+        if debug: print("Transmitindo pacote fila")
         packets_to_release -= 1
 
 def thread_Time(thread_name, interval):
@@ -21,23 +24,22 @@ def thread_Time(thread_name, interval):
 
 def thread_LeakyBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global Socket, packets_to_release, bucket, semaphore, bucket_max_size
+    global Socket, packets_to_release, bucket, semaphore, bucket_max_size, debug
     while 1:
         message = Socket.recvfrom(65000)
         [contentReceived, originAddress] = message
         if len(bucket):
             if len(bucket) < bucket_max_size:
                 bucket.append(message)
-                '''#Talvez consumir a fila, evitando dropar pacotes
-                semaphore.aquire()
+                semaphore.acquire()
                 consumeBucket()
-                semaphore.release()'''
+                semaphore.release()
             else:
-                print("Mensagem dropada: " + str(message))
+                if debug: print("Mensagem dropada")
         else:
             semaphore.acquire()
             if packets_to_release > 0:
-                print("Transmitindo pacote " + str(message))
+                if debug: print("Transmitindo pacote")
                 packets_to_release -= 1
             else:
                 bucket.append(message)
@@ -45,16 +47,15 @@ def thread_LeakyBucket():
 
 bucket = []
 
-# packets_to_release = 3
-# bucket_max_size = 30
-# interval = 0.3
-# host_address = '127.0.0.1'
-# target_address = 0
+#packets_to_release = 3
+#bucket_max_size = 30
+#interval = 0.3
+#interface = 'wlp0s20f3'
+#debug = 1
 
 #__PARAMETERS__
 
-Socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-Socket.bind((host_address, 8005))
+Socket = pp.socketStart(interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))
@@ -62,7 +63,3 @@ leaky_bucket = threading.Thread(target=thread_LeakyBucket, args=())
 
 timer.start()
 leaky_bucket.start()
-
-for i in range(0, 10):
-    message = ("Mensagem: " + str(i)).encode()
-    Socket.sendto(message, (host_address, 8005))

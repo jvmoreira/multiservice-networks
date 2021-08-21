@@ -1,20 +1,23 @@
+import sys
+sys.path.append('../src/')
 import threading #thread module imported
 import time #time module
 import socket
+import packetProcessing as pp
 
 def consumeQueue():
-    global queue, Socket, bucket_size
+    global queue, Socket, bucket_size, debug
     sentQueue = 0
     if (len(queue) == 0):
         return
     while sentQueue == 0:
         [contentReceived, originAddress] = queue[0]
-        packet_size = int(contentReceived.decode())
+        packet_size = pp.ipPacketSize(contentReceived)
         if packet_size <= bucket_size:
-            print("Transmitindo pacote " + str(queue.pop(0)))
+            if debug: print("Transmitindo pacote da fila")
             bucket_size -= packet_size
             if (len(queue) == 0):
-                sentQueue = 1
+                sentQueue = 1 
         else:
             sentQueue = 1
 
@@ -26,41 +29,40 @@ def thread_Time(thread_name, interval):
         consumeQueue()
         semaphore.release()
         time.sleep(interval)
-
+        
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global Socket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size
+    global Socket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug
     while 1:
         message = Socket.recvfrom(65000)
         [contentReceived, originAddress] = message
-        packet_size = int(contentReceived.decode())
+        packet_size = pp.ipPacketSize(contentReceived)
         semaphore.acquire()
         if bucket_size < packet_size:
             consumeQueue()
             if len(queue) < queue_max_size:
                 queue.append(message)
             else:
-                print("Mensagem dropada: " + str(message))
+                if debug: print("Mensagem dropada")
         else:
-            print("Transmitindo pacote " + str(message))
+            if debug: print("Transmitindo pacote")
             bucket_size -= packet_size
             consumeQueue()
         semaphore.release()
 
 queue = []
 
-# rate = 2
-# bucket_size = 20
-# bucket_max_size = 30
-# interval = 1.0
-# queue_max_size = 20
-# host_address = '127.0.0.1'
-# target_address = 0
+#rate = 50
+#bucket_size = 100
+#bucket_max_size = 200
+#interval = 0.5
+#queue_max_size = 25
+#interface = 'wlp0s20f3'
+#debug = 1
 
 #__PARAMETERS__
 
-Socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-Socket.bind((host_address, 8005))
+Socket = pp.socketStart(interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))
@@ -68,7 +70,3 @@ token_bucket = threading.Thread(target=thread_TokenBucket, args=())
 
 timer.start()
 token_bucket.start()
-
-for i in range(1, 11):
-    message = str(i).encode()
-    Socket.sendto(message, (host_address, 8005))
