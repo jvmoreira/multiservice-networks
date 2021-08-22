@@ -1,9 +1,7 @@
-import sys
-sys.path.append('../src/')
 import threading #thread module imported
 import time #time module
 import socket
-import packetProcessing as pp
+import lib.packetProcessing as pp
 
 def thread_Time(thread_name, interval):
     global semaphore, rate, bucket_size, bucket_max_size

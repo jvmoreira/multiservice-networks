@@ -8,8 +8,8 @@
   - bucket_size
   - bucket_max_size
   - interval
-  - host_address
-  - target_address
+  - interface
+  - debug
 
 - One Rate Three Colors
   - rate
@@ -39,12 +39,12 @@
   - bucket_max_size
   - interval
   - queue_max_size
-  - host_address
-  - target_address
+  - interface
+  - debug
 
 - Leaky Bucket
   - packets_to_release
   - bucket_max_size
   - interval
-  - host_address
-  - target_address
+  - interface
+  - debug

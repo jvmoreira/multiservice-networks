@@ -1,9 +1,7 @@
-import sys
-sys.path.append('../src/')
 import threading #thread module imported
 import time #time module
 import socket
-import packetProcessing as pp
+import lib.packetProcessing as pp
 
 def consumeQueue():
     global queue, Socket, bucket_size, debug

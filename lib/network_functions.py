@@ -26,7 +26,7 @@ class LeakyBucket(NetworkFunction):
     @classmethod
     def getParameters(cls, network_category):
         if network_category == NetworkFunction.SHAPING_CATEGORY:
-            return ['packets_to_release', 'bucket_max_size', 'interval', 'host_address', 'target_address']
+            return ['packets_to_release', 'bucket_max_size', 'interval', 'interface', 'debug']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
@@ -42,9 +42,9 @@ class TokenBucket(NetworkFunction):
     @classmethod
     def getParameters(cls, network_category):
         if network_category == NetworkFunction.SHAPING_CATEGORY:
-            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'queue_max_size', 'host_address', 'target_address']
+            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'queue_max_size', 'interface', 'debug']
         if network_category == NetworkFunction.POLICING_CATEGORY:
-            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'host_address', 'target_address']
+            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'interface', 'debug']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
