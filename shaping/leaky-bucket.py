@@ -12,10 +12,10 @@ def consumeBucket():
         packets_to_release -= 1
 
 def thread_Time(thread_name, interval):
-    global semaphore, packets_to_release
+    global semaphore, packets_to_release, packets_to_release_value
     while 1: #Ver condicao do while
         semaphore.acquire()
-        packets_to_release = 3
+        packets_to_release = packets_to_release_value
         consumeBucket()
         semaphore.release()
         time.sleep(interval)
@@ -28,6 +28,7 @@ def thread_LeakyBucket():
         [contentReceived, originAddress] = message
         if len(bucket):
             if len(bucket) < bucket_max_size:
+                if debug: print("Adicionou na fila e bucket nao vazio")
                 bucket.append(message)
                 semaphore.acquire()
                 consumeBucket()
@@ -40,6 +41,7 @@ def thread_LeakyBucket():
                 if debug: print("Transmitindo pacote")
                 packets_to_release -= 1
             else:
+                if debug: print("Adicionou na fila e bucket vazio")
                 bucket.append(message)
             semaphore.release()
 
@@ -52,6 +54,8 @@ bucket = []
 #debug = 1
 
 #__PARAMETERS__
+
+packets_to_release_value = packets_to_release
 
 Socket = pp.socketStart(interface)
 
