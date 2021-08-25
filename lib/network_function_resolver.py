@@ -6,6 +6,6 @@ class NetworkFunctionResolver:
         if network_function_name == 'leaky-bucket': return LeakyBucket
         if network_function_name == 'token-bucket': return TokenBucket
         if network_function_name == 'one-rate-three-color': return OneRateThreeColor
-        if network_function_name == 'two-color-three-color': return TwoRateThreeColor
+        if network_function_name == 'two-rate-three-color': return TwoRateThreeColor
 
         raise Exception('Network function not supported: "{}"'.format(network_function_name))
