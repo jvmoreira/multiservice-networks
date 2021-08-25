@@ -18,8 +18,16 @@
   - bucketS_size
   - bucketS_max_size
   - interval
-  - host_address
-  - target_address
+  - interface
+  - debug
+  - color_aware
+  - Se color_aware for 1 necessário os parâmetros abaixo
+  - ca_rate
+  - ca_bucketF_size
+  - ca_bucketF_max_size
+  - ca_bucketS_size
+  - ca_bucketS_max_size
+
 
 - Two Rate Three Color
   - rateF
@@ -29,8 +37,16 @@
   - bucketS_size
   - bucketS_max_size
   - interval
-  - host_address
-  - target_address
+  - interface
+  - debug
+  - color_aware
+  - Se color_aware for 1 necessário os parâmetros abaixo
+  - ca_rateF
+  - ca_rateS
+  - ca_bucketF_size
+  - ca_bucketF_max_size
+  - ca_bucketS_size
+  - ca_bucketS_max_size
 
 #### Shaping
 - Token Bucket

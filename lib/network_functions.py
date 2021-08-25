@@ -1,6 +1,7 @@
 class NetworkFunction:
     SHAPING_CATEGORY = 'shaping'
     POLICING_CATEGORY = 'policing'
+    IS_ON = 1
 
     @classmethod
     def getName(cls):
@@ -58,10 +59,12 @@ class OneRateThreeColor(NetworkFunction):
         return 'One Rate Three Color'
 
     @classmethod
-    def getParameters(cls, network_category):
+    def getParameters(cls, network_category, color_aware):
         if network_category == NetworkFunction.POLICING_CATEGORY:
-            return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'host_address', 'target_address']
-
+            if color_aware == NetworkFunction.IS_ON:
+                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware', 'ca_rate', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
+            else:
+                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware']
         cls.raiseInvalidNetworkCategoryError(network_category)
 
     @classmethod
