@@ -41,7 +41,7 @@ def thread_Time(thread_name, interval):
         semaphore.release()
         time.sleep(interval)
         
-def thread_TokenBucket():
+def thread_OneRateThreeColor():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
     global Socket, bucketF_size, semaphore, bucketS_size, dropped, debug
     while 1:
@@ -51,18 +51,25 @@ def thread_TokenBucket():
         semaphore.acquire()
         if bucketF_size < packet_size:
             if bucketS_size < packet_size:
-                if debug: print("Mensagem marcada: Red")
                 if color_aware:
+                    if debug: print("Mensagem marcada: Red")
                     colorAware(message, "Red")
                 else:
+                    if debug: print("Red Action")
                     dropped.append(message)
             else:
-                if debug: print("Mensagem marcada: Yellow")
-                if color_aware: colorAware(message, "Yellow")
+                if color_aware:
+                    if debug: print("Mensagem marcada: Yellow") 
+                    colorAware(message, "Yellow")
+                else: 
+                    if debug: print("Yellow Action")
                 bucketS_size -= packet_size
         else:
-            if debug: print("Mensagem marcada: Green")
-            if color_aware: colorAware(message, "Green")
+            if color_aware:
+                if debug: print("Mensagem marcada: Green") 
+                colorAware(message, "Green")
+            else:
+                if debug: print("Green Action")
             bucketF_size -= packet_size
         semaphore.release()
 
@@ -99,7 +106,7 @@ Socket = pp.socketStart(interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))
-token_bucket = threading.Thread(target=thread_TokenBucket, args=())
+one_rate_three_color = threading.Thread(target=thread_OneRateThreeColor, args=())
 
 timer.start()
-token_bucket.start()
+one_rate_three_color.start()
