@@ -1,5 +1,5 @@
 class NetworkFunctionValidator:
-    POSSIBLE_COLOR_AWARE = ["one-rate-three-color"]
+    POSSIBLE_COLOR_AWARE = ["one-rate-three-color", "two-rate-three-color"]
 
     @classmethod
     def validate(cls, network_function, parameters):

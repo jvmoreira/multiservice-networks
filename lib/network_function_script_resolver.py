@@ -15,7 +15,7 @@ def buildParametersDefinitionString(network_function, function_category, paramet
     return parameters_definition.rstrip()
 
 class NetworkFunctionScriptResolver:
-    POSSIBLE_COLOR_AWARE = ["one-rate-three-color"]
+    POSSIBLE_COLOR_AWARE = ["one-rate-three-color", "two-rate-three-color"]
 
     @classmethod
     def resolve(cls, network_function, parameters):

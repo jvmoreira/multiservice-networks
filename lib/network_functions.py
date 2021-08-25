@@ -77,9 +77,12 @@ class TwoRateThreeColor(NetworkFunction):
         return 'Two Rate Three Color'
 
     @classmethod
-    def getParameters(cls, network_category):
+    def getParameters(cls, network_category, color_aware):
         if network_category == NetworkFunction.POLICING_CATEGORY:
-            return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'host_address', 'target_address']
+            if color_aware == NetworkFunction.IS_ON:
+                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware', 'ca_rateF', 'ca_rateS', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
+            else:
+                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
