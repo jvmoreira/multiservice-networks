@@ -1,7 +1,7 @@
 import threading #thread module imported
 import time #time module
 import socket
-import lib.packetProcessing as pp
+import lib.packet_processing as pp
 
 def thread_Time(thread_name, interval):
     global semaphore, rate, bucket_size, bucket_max_size
@@ -10,7 +10,7 @@ def thread_Time(thread_name, interval):
         bucket_size += rate if bucket_size + rate <= bucket_max_size else bucket_max_size
         semaphore.release()
         time.sleep(interval)
-        
+
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
     global Socket, bucket_size, semaphore, bucket_max_size, dropped, debug

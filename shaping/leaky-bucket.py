@@ -1,7 +1,7 @@
 import threading #thread module imported
 import time #time module
 import socket
-import lib.packetProcessing as pp
+import lib.packet_processing as pp
 
 def consumeBucket():
     global bucket, packets_to_release, Socket, debug

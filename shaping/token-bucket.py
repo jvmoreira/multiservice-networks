@@ -1,7 +1,7 @@
 import threading #thread module imported
 import time #time module
 import socket
-import lib.packetProcessing as pp
+import lib.packet_processing as pp
 
 def consumeQueue():
     global queue, Socket, bucket_size, debug
@@ -15,7 +15,7 @@ def consumeQueue():
             if debug: print("Transmitindo pacote da fila")
             bucket_size -= packet_size
             if (len(queue) == 0):
-                sentQueue = 1 
+                sentQueue = 1
         else:
             sentQueue = 1
 
@@ -27,7 +27,7 @@ def thread_Time(thread_name, interval):
         consumeQueue()
         semaphore.release()
         time.sleep(interval)
-        
+
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
     global Socket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug

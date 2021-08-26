@@ -1,7 +1,7 @@
 import threading #thread module imported
 import time #time module
 import socket
-import lib.packetProcessing as pp
+import lib.packet_processing as pp
 
 def colorAware(message, color):
     global ca_bucketF_size, ca_bucketS_size, ca_dropped
@@ -40,7 +40,7 @@ def thread_Time(thread_name, interval):
         if color_aware: colorAwareBucketRate()
         semaphore.release()
         time.sleep(interval)
-        
+
 def thread_OneRateThreeColor():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
     global Socket, bucketF_size, semaphore, bucketS_size, dropped, debug
@@ -59,14 +59,14 @@ def thread_OneRateThreeColor():
                     dropped.append(message)
             else:
                 if color_aware:
-                    if debug: print("Mensagem marcada: Yellow") 
+                    if debug: print("Mensagem marcada: Yellow")
                     colorAware(message, "Yellow")
-                else: 
+                else:
                     if debug: print("Yellow Action")
                 bucketS_size -= packet_size
         else:
             if color_aware:
-                if debug: print("Mensagem marcada: Green") 
+                if debug: print("Mensagem marcada: Green")
                 colorAware(message, "Green")
             else:
                 if debug: print("Green Action")
@@ -92,9 +92,9 @@ dropped = []
 
 #__PARAMETERS__
 
-if color_aware: 
-    ca_dropped = [] 
-else: 
+if color_aware:
+    ca_dropped = []
+else:
     ca_bucketF_size = 0
     ca_bucketF_max_size = 0
     ca_bucketS_size = 0
