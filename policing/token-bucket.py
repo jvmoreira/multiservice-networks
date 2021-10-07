@@ -13,19 +13,21 @@ def thread_Time(thread_name, interval):
 
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global Socket, bucket_size, semaphore, bucket_max_size, dropped, debug
+    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, dropped, debug
     while 1:
-        message = Socket.recvfrom(65000)
-        [contentReceived, originAddress] = message
-        packet_size = pp.ipPacketSize(contentReceived)
-        semaphore.acquire()
-        if bucket_size < packet_size:
-            dropped.append(message)
-            if debug: print("Mensagem dropada")
-        else:
-            if debug: print("Transmitindo pacote")
-            bucket_size -= packet_size
-        semaphore.release()
+        message = clientSocket.recvfrom(65000)
+        if (pp.packetAnalysis(message) == 1):
+            [contentReceived, originAddress] = message
+            packet_size = pp.ipPacketSize(contentReceived)
+            semaphore.acquire()
+            if bucket_size < packet_size:
+                dropped.append(contentReceived)
+                if debug: print("Mensagem dropada")
+            else:
+                if debug: print("Transmitindo pacote")
+                serverSocket.send(contentReceived)
+                bucket_size -= packet_size
+            semaphore.release()
 
 dropped = []
 
@@ -38,7 +40,8 @@ dropped = []
 
 #__PARAMETERS__
 
-Socket = pp.socketStart(interface)
+clientSocket = pp.socketStart(client_interface)
+serverSocket = pp.socketStart(server_interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))

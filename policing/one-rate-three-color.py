@@ -4,22 +4,24 @@ import socket
 import lib.packet_processing as pp
 
 def colorAware(message, color):
-    global ca_bucketF_size, ca_bucketS_size, ca_dropped
+    global ca_bucketF_size, ca_bucketS_size, ca_dropped, serverSocket
     [contentReceived, originAddress] = message
     packet_size = pp.ipPacketSize(contentReceived)
     if color == "Green":
         if ca_bucketF_size < packet_size:
-            ca_dropped.append(message)
+            ca_dropped.append(contentReceived)
             if debug: print("ColorAware: Red")
         else:
-            ca_bucketF_size =- packet_size
+            ca_bucketF_size -= packet_size
+            serverSocket.send(contentReceived)
             if debug: print("ColorAware: Green")
     elif color == "Yellow":
         if ca_bucketS_size < packet_size:
-            ca_dropped.append(message)
+            ca_dropped.append(contentReceived)
             if debug: print("ColorAware: Red")
         else:
-            ca_bucketS_size =- packet_size
+            serverSocket.send(contentReceived)
+            ca_bucketS_size -= packet_size
             if debug: print("ColorAware: Yellow")
     else:
         ca_dropped.append(message)
@@ -43,35 +45,38 @@ def thread_Time(thread_name, interval):
 
 def thread_OneRateThreeColor():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global Socket, bucketF_size, semaphore, bucketS_size, dropped, debug
+    global clientSocket, serverSocket, bucketF_size, semaphore, bucketS_size, dropped, debug
     while 1:
-        message = Socket.recvfrom(65000)
-        [contentReceived, originAddress] = message
-        packet_size = pp.ipPacketSize(contentReceived)
-        semaphore.acquire()
-        if bucketF_size < packet_size:
-            if bucketS_size < packet_size:
-                if color_aware:
-                    if debug: print("Mensagem marcada: Red")
-                    colorAware(message, "Red")
+        message = clientSocket.recvfrom(65000)
+        if (pp.packetAnalysis(message) == 1):
+            [contentReceived, originAddress] = message
+            packet_size = pp.ipPacketSize(contentReceived)
+            semaphore.acquire()
+            if bucketF_size < packet_size:
+                if bucketS_size < packet_size:
+                    if color_aware:
+                        if debug: print("Mensagem marcada: Red")
+                        colorAware(message, "Red")
+                    else:
+                        if debug: print("Red Action")
+                        dropped.append(contentReceived)
                 else:
-                    if debug: print("Red Action")
-                    dropped.append(message)
+                    if color_aware:
+                        if debug: print("Mensagem marcada: Yellow")
+                        colorAware(message, "Yellow")
+                    else:
+                        serverSocket.send(contentReceived)
+                        if debug: print("Yellow Action")
+                    bucketS_size -= packet_size
             else:
                 if color_aware:
-                    if debug: print("Mensagem marcada: Yellow")
-                    colorAware(message, "Yellow")
+                    if debug: print("Mensagem marcada: Green")
+                    colorAware(message, "Green")
                 else:
-                    if debug: print("Yellow Action")
-                bucketS_size -= packet_size
-        else:
-            if color_aware:
-                if debug: print("Mensagem marcada: Green")
-                colorAware(message, "Green")
-            else:
-                if debug: print("Green Action")
-            bucketF_size -= packet_size
-        semaphore.release()
+                    serverSocket.send(contentReceived)
+                    if debug: print("Green Action")
+                bucketF_size -= packet_size
+            semaphore.release()
 
 dropped = []
 
@@ -102,7 +107,8 @@ else:
     ca_rate = 0
     ca_dropped = []
 
-Socket = pp.socketStart(interface)
+clientSocket = pp.socketStart(client_interface)
+serverSocket = pp.socketStart(server_interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))

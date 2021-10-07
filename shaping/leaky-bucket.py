@@ -26,23 +26,23 @@ def thread_LeakyBucket():
     global clientSocket, serverSocket, packets_to_release, bucket, semaphore, bucket_max_size, debug
     while 1:
         message = clientSocket.recvfrom(65000)
-        if (packetAnalysis(message) == 1):
+        if (pp.packetAnalysis(message) == 1):
             [contentReceived, originAddress] = message
             if len(bucket):
                 if len(bucket) < bucket_max_size:
                     if debug: print("Adicionou na fila e bucket nao vazio")
-                    bucket.append(message)
+                    bucket.append(contentReceived)
                 else:
                     if debug: print("Mensagem dropada")
             else:
                 semaphore.acquire()
                 if packets_to_release > 0:
                     if debug: print("Transmitindo pacote")
-                    serverSocket.send(message)
+                    serverSocket.send(contentReceived)
                     packets_to_release -= 1
                 else:
                     if debug: print("Adicionou na fila e bucket vazio")
-                    bucket.append(message)
+                    bucket.append(contentReceived)
                 semaphore.release()
 
 bucket = []

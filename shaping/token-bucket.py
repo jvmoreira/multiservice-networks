@@ -4,7 +4,7 @@ import socket
 import lib.packet_processing as pp
 
 def consumeQueue():
-    global queue, Socket, bucket_size, debug
+    global queue, serverSocket, bucket_size, debug
     sentQueue = 0
     if (len(queue) == 0):
         return
@@ -13,6 +13,7 @@ def consumeQueue():
         packet_size = pp.ipPacketSize(contentReceived)
         if packet_size <= bucket_size:
             if debug: print("Transmitindo pacote da fila")
+            serverSocket.send(contentReceived)
             bucket_size -= packet_size
             if (len(queue) == 0):
                 sentQueue = 1
@@ -30,23 +31,25 @@ def thread_Time(thread_name, interval):
 
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global Socket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug
+    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug
     while 1:
-        message = Socket.recvfrom(65000)
-        [contentReceived, originAddress] = message
-        packet_size = pp.ipPacketSize(contentReceived)
-        semaphore.acquire()
-        if bucket_size < packet_size:
-            consumeQueue()
-            if len(queue) < queue_max_size:
-                queue.append(message)
+        message = clientSocket.recvfrom(65000)
+        if (pp.packetAnalysis(message) == 1):
+            [contentReceived, originAddress] = message
+            packet_size = pp.ipPacketSize(contentReceived)
+            semaphore.acquire()
+            if bucket_size < packet_size:
+                consumeQueue()
+                if len(queue) < queue_max_size:
+                    queue.append(message)
+                else:
+                    if debug: print("Mensagem dropada")
             else:
-                if debug: print("Mensagem dropada")
-        else:
-            if debug: print("Transmitindo pacote")
-            bucket_size -= packet_size
-            consumeQueue()
-        semaphore.release()
+                if debug: print("Transmitindo pacote")
+                serverSocket.send(contentReceived)
+                bucket_size -= packet_size
+                consumeQueue()
+            semaphore.release()
 
 queue = []
 
@@ -60,7 +63,8 @@ queue = []
 
 #__PARAMETERS__
 
-Socket = pp.socketStart(interface)
+clientSocket = pp.socketStart(client_interface)
+serverSocket = pp.socketStart(server_interface)
 
 semaphore = threading.Semaphore(1)
 timer = threading.Thread(target=thread_Time, args=('timer', interval))
