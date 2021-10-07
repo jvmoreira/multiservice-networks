@@ -36,7 +36,7 @@ def ipPacketData(data):
            life_time_ttl, protocols, checksum_header, ip_origin, ip_destiny, data[header_size_bytes:] 
 
 def ipPacketSize(frame):
-    destiny, origin, protocol, data = unpackFrameEthernet(frame)
+    #destiny, origin, protocol, data = unpackFrameEthernet(frame)
     total_size = len(frame)
     '''Apenas IPV4
     if protocol == 8:
@@ -47,6 +47,17 @@ def ipPacketSize(frame):
     return total_size
 
 def socketStart(net_interface):
-    Socket = socket(AF_PACKET, SOCK_RAW, ntohs(0x0003))
-    Socket.setsockopt(SOL_SOCKET, SO_BINDTODEVICE, str(net_interface).encode()) 
+    Socket = socket(AF_PACKET, SOCK_RAW, htons(3))
+    Socket.bind((net_interface, 0))
     return Socket
+
+def packetAnalysis(frame):
+    if (data[:6] == b'\x00\x00\x00\x00\x01\x01'):
+		return 0
+	if (data[:6][:6] == b'RT\x001\x82'):
+        return 0
+	if (data[:6] == b'\xff\xff\xff\xff\xff\xff'):
+		if (data[:6][:6] != b'\x00\x00\x00\x00\x01\x01'):
+			return 0
+    
+    return 1

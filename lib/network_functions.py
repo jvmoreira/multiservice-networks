@@ -27,7 +27,7 @@ class LeakyBucket(NetworkFunction):
     @classmethod
     def getParameters(cls, network_category):
         if network_category == NetworkFunction.SHAPING_CATEGORY:
-            return ['packets_to_release', 'bucket_max_size', 'interval', 'interface', 'debug']
+            return ['packets_to_release', 'bucket_max_size', 'interval', 'client_interface', 'debug', 'server_interface']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
@@ -43,9 +43,9 @@ class TokenBucket(NetworkFunction):
     @classmethod
     def getParameters(cls, network_category):
         if network_category == NetworkFunction.SHAPING_CATEGORY:
-            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'queue_max_size', 'interface', 'debug']
+            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'queue_max_size', 'client_interface', 'debug', 'server_interface']
         if network_category == NetworkFunction.POLICING_CATEGORY:
-            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'interface', 'debug']
+            return ['rate', 'bucket_size', 'bucket_max_size', 'interval', 'client_interface', 'debug', 'server_interface']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
@@ -62,9 +62,9 @@ class OneRateThreeColor(NetworkFunction):
     def getParameters(cls, network_category, color_aware):
         if network_category == NetworkFunction.POLICING_CATEGORY:
             if color_aware == NetworkFunction.IS_ON:
-                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware', 'ca_rate', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
+                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval','client_interface', 'debug', 'server_interface', 'color_aware', 'ca_rate', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
             else:
-                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware']
+                return ['rate', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'client_interface', 'debug', 'server_interface', 'color_aware']
         cls.raiseInvalidNetworkCategoryError(network_category)
 
     @classmethod
@@ -80,9 +80,9 @@ class TwoRateThreeColor(NetworkFunction):
     def getParameters(cls, network_category, color_aware):
         if network_category == NetworkFunction.POLICING_CATEGORY:
             if color_aware == NetworkFunction.IS_ON:
-                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware', 'ca_rateF', 'ca_rateS', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
+                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'client_interface', 'debug', 'server_interface', 'color_aware', 'ca_rateF', 'ca_rateS', 'ca_bucketF_size', 'ca_bucketF_max_size', 'ca_bucketS_size', 'ca_bucketS_max_size']
             else:
-                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'interface', 'debug', 'color_aware']
+                return ['rateF', 'rateS', 'bucketF_size', 'bucketF_max_size', 'bucketS_size', 'bucketS_max_size', 'interval', 'client_interface', 'debug', 'server_interface', 'color_aware']
 
         cls.raiseInvalidNetworkCategoryError(network_category)
 
