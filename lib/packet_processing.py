@@ -51,13 +51,12 @@ def socketStart(net_interface):
     Socket.bind((net_interface, 0))
     return Socket
 
-def packetAnalysis(frame):
-    if (data[:6] == b'\x00\x00\x00\x00\x01\x01'):
-		return 0
-	if (data[:6][:6] == b'RT\x001\x82'):
-        return 0
-	if (data[:6] == b'\xff\xff\xff\xff\xff\xff'):
-		if (data[:6][:6] != b'\x00\x00\x00\x00\x01\x01'):
-			return 0
+def packetAnalysis(data):
+    if (data[:6] == b'\x00\x00\x00\x00\x01\x02') and (data[6:][:6] == b'\x00\x00\x00\x00\x01\x01'):
+        return 1
     
-    return 1
+    return 0
+
+def packetDelay(last, now):
+    diff = now - last
+    return diff
