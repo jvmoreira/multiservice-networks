@@ -4,16 +4,16 @@ import socket
 import lib.packet_processing as pp
 
 def consumeBucket():
-    global bucket, packets_to_release, serverSocket, debug, n_transmitted, last_number_message_transmitted, n_delay, sum_delay
+    global bucket, packets_to_release, serverSocket, debug, n_transmitted#, last_number_message_transmitted, n_delay, sum_delay
     if (len(bucket) == 0):
         return
     while (len(bucket)) and (packets_to_release > 0):
         if debug: 
             print("Transmitindo pacote fila")
             n_transmitted += 1
-            message_number = position.pop(0)
-            sum_delay += packetDelay(last_number_message_transmitted, message_number)
-            n_delay = soma_delay/n_transmitted
+            #message_number = position.pop(0)
+            #sum_delay += pp.packetDelay(last_number_message_transmitted, message_number)
+            #n_delay = soma_delay/n_transmitted
 
         serverSocket.send(bucket.pop(0))
         packets_to_release -= 1
@@ -29,12 +29,14 @@ def thread_Time(thread_name, interval):
         time.sleep(interval)
 
 def saveInfos():
-    global packets_to_release_value, n_dropped, n_transmitted, arquivoSaida
+    global n_dropped, n_transmitted, arquivoSaida, done
 
     total = n_dropped + n_transmitted
-    if (total == 500):
-        saida = '{}__{}__{}'.format(n_transmitted, n_dropped, n_delay)
+    if ((total >= 500) and (done == 0)):
+        saida = '{}__{}'.format(n_transmitted, n_dropped)
         arquivoSaida.write(saida)
+        done = 1
+        arquivoSaida.close() 
 
 
 def thread_LeakyBucket():
@@ -44,14 +46,14 @@ def thread_LeakyBucket():
     n_message = 0
     while 1:
         message = clientSocket.recvfrom(65000)
-        if (pp.packetAnalysis(message) == 1):
+        [contentReceived, originAddress] = message
+        if (pp.packetAnalysis(contentReceived) == 1):
             n_message += 1
-            [contentReceived, originAddress] = message
             if len(bucket):
                 if len(bucket) < bucket_max_size:
                     if debug: 
                         print("Adicionou na fila e bucket nao vazio")
-                        position.append(n_message)
+                        #position.append(n_message)
                     bucket.append(contentReceived)
                 else:
                     if debug: 
@@ -69,10 +71,10 @@ def thread_LeakyBucket():
                 else:
                     if debug: 
                         print("Adicionou na fila e bucket vazio")
-                        position.append(n_message)
+                        #position.append(n_message)
                     bucket.append(contentReceived)
-                semaphore.release()
-        saveInfos()
+            saveInfos()
+            semaphore.release()
 
 bucket = []
 
@@ -89,10 +91,10 @@ packets_to_release_value = packets_to_release
 if debug:
     n_transmitted = 0
     n_dropped = 0
-    n_delay = 0
-    sum_delay = 0
-    position = []
-    last_number_message_transmitted = 0
+    #n_delay = 0
+    #sum_delay = 0
+    #position = []
+    #last_number_message_transmitted = 0
     arquivoSaida = open('leakybucket-{}.csv'.format(packets_to_release_value), 'w')
 
 clientSocket = pp.socketStart(client_interface)

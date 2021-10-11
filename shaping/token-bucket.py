@@ -3,8 +3,18 @@ import time #time module
 import socket
 import lib.packet_processing as pp
 
+def saveInfos():
+    global n_dropped, n_transmitted, arquivoSaida, done, n_delay
+
+    total = n_dropped + n_transmitted
+    if ((total >= 500) and (done == 0)):
+        saida = '{}__{}__{}'.format(n_transmitted, n_dropped, n_delay)
+        arquivoSaida.write(saida)
+        done = 1
+        arquivoSaida.close() 
+
 def consumeQueue():
-    global queue, serverSocket, bucket_size, debug
+    global queue, serverSocket, bucket_size, debug,  n_transmitted, last_number_message_transmitted, n_delay, sum_delay
     sentQueue = 0
     if (len(queue) == 0):
         return
@@ -12,13 +22,19 @@ def consumeQueue():
         [contentReceived, originAddress] = queue[0]
         packet_size = pp.ipPacketSize(contentReceived)
         if packet_size <= bucket_size:
-            if debug: print("Transmitindo pacote da fila")
+            if debug: 
+                print("Transmitindo pacote da fila")
+                n_transmitted += 1
+                message_number = position.pop(0)
+                sum_delay += pp.packetDelay(last_number_message_transmitted, message_number) - 1
+                n_delay = soma_delay/n_transmitted
             serverSocket.send(contentReceived)
             bucket_size -= packet_size
             if (len(queue) == 0):
                 sentQueue = 1
         else:
             sentQueue = 1
+    saveInfos()
 
 def thread_Time(thread_name, interval):
     global semaphore, rate, bucket_size, bucket_max_size
@@ -31,25 +47,36 @@ def thread_Time(thread_name, interval):
 
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug
+    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug, n_transmitted
+
+    n_message = 0
     while 1:
         message = clientSocket.recvfrom(65000)
-        if (pp.packetAnalysis(message) == 1):
-            [contentReceived, originAddress] = message
+        [contentReceived, originAddress] = message
+        if (pp.packetAnalysis(contentReceived) == 1):
+            n_message += 1
             packet_size = pp.ipPacketSize(contentReceived)
             semaphore.acquire()
             if bucket_size < packet_size:
                 consumeQueue()
                 if len(queue) < queue_max_size:
                     queue.append(message)
+                    if debug:
+                        position.append(n_message)
                 else:
-                    if debug: print("Mensagem dropada")
+                    if debug: 
+                        print("Mensagem dropada")
+                        n_dropped += 1
             else:
-                if debug: print("Transmitindo pacote")
+                if debug: 
+                    print("Transmitindo pacote")
+                    n_transmitted += 1
+                    last_number_message_transmitted = n_message
                 serverSocket.send(contentReceived)
                 bucket_size -= packet_size
                 consumeQueue()
-            semaphore.release()
+        saveInfos()
+        semaphore.release()
 
 queue = []
 
@@ -62,6 +89,15 @@ queue = []
 #debug = 1
 
 #__PARAMETERS__
+
+if debug:
+    n_transmitted = 0
+    n_dropped = 0
+    n_delay = 0
+    sum_delay = 0
+    position = []
+    last_number_message_transmitted = 0
+    arquivoSaida = open('tokenBucketS-{}-{}.csv'.format(rate, bucket_max_size), 'w')
 
 clientSocket = pp.socketStart(client_interface)
 serverSocket = pp.socketStart(server_interface)
