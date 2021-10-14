@@ -39,7 +39,7 @@ def thread_LeakyBucket():
     n_message = 0
     while 1:
         contentReceived = clientSocket.recv(65535)
-        if (pp.packetAnalysis(contentReceived) == 1):
+        if (pp.packetAnalysis(contentReceived, serverSocket) == 1):
             n_message += 1
             if len(bucket):
                 if len(bucket) < bucket_max_size:
@@ -58,7 +58,6 @@ def thread_LeakyBucket():
                         print("Transmitindo pacote")
                         n_transmitted += 1
                         if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
-                        last_number_message_transmitted = n_message
                     serverSocket.send(contentReceived)
                     packets_to_release -= 1
                 else:
