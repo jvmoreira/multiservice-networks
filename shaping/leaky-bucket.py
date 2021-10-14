@@ -11,13 +11,10 @@ def consumeBucket():
         if debug: 
             print("Transmitindo pacote fila")
             n_transmitted += 1
-            #message_number = position.pop(0)
-            #sum_delay += pp.packetDelay(last_number_message_transmitted, message_number)
-            #n_delay = soma_delay/n_transmitted
+            if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
 
         serverSocket.send(bucket.pop(0))
         packets_to_release -= 1
-    saveInfos()
 
 def thread_Time(thread_name, interval):
     global semaphore, packets_to_release, packets_to_release_value
@@ -29,15 +26,11 @@ def thread_Time(thread_name, interval):
         time.sleep(interval)
 
 def saveInfos():
-    global n_dropped, n_transmitted, arquivoSaida, done
+    global n_dropped, n_transmitted, arquivoSaida
 
-    total = n_dropped + n_transmitted
-    if ((total >= 500) and (done == 0)):
-        saida = '{}__{}'.format(n_transmitted, n_dropped)
-        arquivoSaida.write(saida)
-        done = 1
-        arquivoSaida.close() 
-
+    saida = '{}__{}'.format(n_transmitted, n_dropped)
+    arquivoSaida.write(saida)
+    arquivoSaida.close() 
 
 def thread_LeakyBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
@@ -45,35 +38,33 @@ def thread_LeakyBucket():
 
     n_message = 0
     while 1:
-        message = clientSocket.recvfrom(65000)
-        [contentReceived, originAddress] = message
+        contentReceived = clientSocket.recv(65535)
         if (pp.packetAnalysis(contentReceived) == 1):
             n_message += 1
             if len(bucket):
                 if len(bucket) < bucket_max_size:
                     if debug: 
                         print("Adicionou na fila e bucket nao vazio")
-                        #position.append(n_message)
                     bucket.append(contentReceived)
                 else:
                     if debug: 
                         print("Mensagem dropada")
                         n_dropped += 1
+                        if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
             else:
                 semaphore.acquire()
                 if packets_to_release > 0:
                     if debug: 
                         print("Transmitindo pacote")
                         n_transmitted += 1
+                        if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
                         last_number_message_transmitted = n_message
                     serverSocket.send(contentReceived)
                     packets_to_release -= 1
                 else:
                     if debug: 
                         print("Adicionou na fila e bucket vazio")
-                        #position.append(n_message)
                     bucket.append(contentReceived)
-            saveInfos()
             semaphore.release()
 
 bucket = []
@@ -91,10 +82,6 @@ packets_to_release_value = packets_to_release
 if debug:
     n_transmitted = 0
     n_dropped = 0
-    #n_delay = 0
-    #sum_delay = 0
-    #position = []
-    #last_number_message_transmitted = 0
     arquivoSaida = open('leakybucket-{}.csv'.format(packets_to_release_value), 'w')
 
 clientSocket = pp.socketStart(client_interface)
