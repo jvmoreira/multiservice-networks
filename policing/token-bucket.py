@@ -20,7 +20,7 @@ def thread_Time(thread_name, interval):
 
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, dropped, debug
+    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, dropped, debug, n_transmitted, n_dropped
     while 1:
         contentReceived = clientSocket.recv(65535)
         if (pp.packetAnalysis(contentReceived, serverSocket) == 1):

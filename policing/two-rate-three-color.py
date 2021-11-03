@@ -4,16 +4,16 @@ import socket
 import lib.packet_processing as pp
 
 def saveInfosCA():
-    global ca_n_dropped, ca_n_transmitted, arquivoSaida, greenToRed, yellowToRed, , n_Reds, n_Yellows, n_Greens
+    global ca_n_dropped, ca_n_transmitted, arquivoSaida, greenToRed, yellowToRed, n_Reds, n_Yellows, n_Greens
 
     saida = '{}__{}__{}__{}__{}__{}__{}'.format(ca_n_transmitted, ca_n_dropped, n_Reds, n_Yellows, n_Greens, greenToRed, yellowToRed)
     arquivoSaida.write(saida)
     arquivoSaida.close() 
 
 def saveInfos():
-    global n_dropped, n_transmitted, arquivoSaida
+    global n_dropped, n_transmitted, arquivoSaida, n_Reds, n_Yellows, n_Greens
 
-    saida = '{}__{}'.format(n_transmitted, n_dropped)
+    saida = '{}__{}__{}__{}__{}'.format(n_transmitted, n_dropped, n_Reds, n_Yellows, n_Greens)
     arquivoSaida.write(saida)
     arquivoSaida.close() 
 
@@ -92,8 +92,9 @@ def thread_TwoRateThreeColor():
                     colorAware(message, "Red")
                 else:
                     if debug: 
-                        print("Mensagem dropada(Red)")
-                         n_dropped += 1
+                        print("Red Action")
+                        n_dropped += 1
+                        n_Reds += 1
                         if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
                     dropped.append(contentReceived)
             else:
@@ -105,8 +106,9 @@ def thread_TwoRateThreeColor():
                         if debug: 
                             print("Yellow Action")
                             n_transmitted += 1
+                            n_Yellows += 1
                             if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
-                        serverSocket(contentReceived)
+                        serverSocket.send(contentReceived)
                     bucketS_size -= packet_size
                 else:
                     if color_aware:
@@ -116,8 +118,9 @@ def thread_TwoRateThreeColor():
                         if debug: 
                             print("Green Action")
                             n_transmitted += 1
+                            n_Greens += 1
                             if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
-                        serverSocket(contentReceived)
+                        serverSocket.send(contentReceived)
                     bucketF_size -= packet_size
                     bucketS_size -= packet_size
             semaphore.release()
@@ -165,6 +168,9 @@ else:
     ca_rateS = 0
     ca_dropped = []
     if debug:
+        n_Greens = 0
+        n_Reds = 0
+        n_Yellows = 0
         n_transmitted = 0
         n_dropped = 0
         arquivoSaida = open('trTCM-{}-{}-{}-{}.csv'.format(rateF, rateS, bucketF_max_size, bucketS_max_size), 'w')

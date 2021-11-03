@@ -38,16 +38,16 @@ def thread_Time(thread_name, interval):
     while 1: #Ver condicao do while
         semaphore.acquire()
         bucket_size = bucket_size + rate if bucket_size + rate <= bucket_max_size else bucket_max_size
-        consumeQueue()
+        #consumeQueue()
         semaphore.release()
         time.sleep(interval)
 
 def thread_TokenBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug, n_transmitted, n_dropped, last_message_transmitted
+    global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug, n_transmitted, n_dropped, last_message_transmitted, n_message
 
     while 1:
-        contentReceived = clientSocket.recvfrom(65535)
+        contentReceived = clientSocket.recv(65535)
         if (pp.packetAnalysis(contentReceived, serverSocket) == 1):
             n_message += 1
             packet_size = pp.ipPacketSize(contentReceived)
@@ -55,7 +55,7 @@ def thread_TokenBucket():
             if bucket_size < packet_size:
                 consumeQueue()
                 if len(queue) < queue_max_size:
-                    queue.append(message)
+                    queue.append(contentReceived)
                     if debug:
                         print("Mensagem adicionada na fila")
                         position.append(n_message)

@@ -34,13 +34,11 @@ def saveInfos():
 
 def thread_LeakyBucket():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global clientSocket, serverSocket, packets_to_release, bucket, semaphore, bucket_max_size, debug, n_delay, n_dropped, n_transmitted, last_number_message_transmitted
+    global clientSocket, serverSocket, packets_to_release, bucket, semaphore, bucket_max_size, debug, n_delay, n_dropped, n_transmitted
 
-    n_message = 0
     while 1:
         contentReceived = clientSocket.recv(65535)
         if (pp.packetAnalysis(contentReceived, serverSocket) == 1):
-            n_message += 1
             if len(bucket):
                 if len(bucket) < bucket_max_size:
                     if debug: 

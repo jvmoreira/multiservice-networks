@@ -11,20 +11,19 @@ def saveInfosCA():
     arquivoSaida.close() 
 
 def saveInfos():
-    global n_dropped, n_transmitted, arquivoSaida
+    global n_dropped, n_transmitted, arquivoSaida, n_Reds, n_Yellows, n_Greens
 
-    saida = '{}__{}'.format(n_transmitted, n_dropped)
+    saida = '{}__{}__{}__{}__{}'.format(n_transmitted, n_dropped, n_Reds, n_Yellows, n_Greens)
     arquivoSaida.write(saida)
     arquivoSaida.close() 
 
-def colorAware(message, color):
+def colorAware(contentReceived, color):
     global ca_bucketF_size, ca_bucketS_size, ca_dropped, serverSocket, n_Reds, n_Yellows, n_Greens, ca_n_transmitted, ca_n_dropped
-    [contentReceived, originAddress] = message
     packet_size = pp.ipPacketSize(contentReceived)
     if color == "Green":
         n_Greens += 1
         if ca_bucketF_size < packet_size:
-            ca_dropped.append(contentReceived)
+            ca_dropped.append()
             if debug: 
                 print("ColorAware: Red")
                 greenToRed += 1
@@ -80,9 +79,9 @@ def thread_Time(thread_name, interval):
 
 def thread_OneRateThreeColor():
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
-    global clientSocket, serverSocket, bucketF_size, semaphore, bucketS_size, dropped, debug, n_transmitted, n_dropped
+    global clientSocket, serverSocket, bucketF_size, semaphore, bucketS_size, dropped, debug, n_transmitted, n_dropped, n_Reds, n_Yellows, n_Greens
     while 1:
-        contentReceived = clientSocket.recv(65000)
+        contentReceived = clientSocket.recv(65535)
         if (pp.packetAnalysis(contentReceived, serverSocket) == 1):
             packet_size = pp.ipPacketSize(contentReceived)
             semaphore.acquire()
@@ -94,6 +93,7 @@ def thread_OneRateThreeColor():
                     else:
                         if debug: print("Red Action")
                         n_dropped += 1
+                        n_Reds += 1
                         if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
                         dropped.append(contentReceived)
                 else:
@@ -105,6 +105,7 @@ def thread_OneRateThreeColor():
                         if debug: 
                             print("Yellow Action")
                             n_transmitted += 1
+                            n_Yellows += 1
                             if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
                     bucketS_size -= packet_size
             else:
@@ -115,7 +116,8 @@ def thread_OneRateThreeColor():
                     serverSocket.send(contentReceived)
                     if debug: 
                         print("Green Action")
-                         n_transmitted += 1
+                        n_transmitted += 1
+                        n_Greens += 1 
                         if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
                 bucketF_size -= packet_size
             semaphore.release()
@@ -162,6 +164,9 @@ else:
     if debug:
         n_transmitted = 0
         n_dropped = 0
+        n_Greens = 0
+        n_Reds = 0
+        n_Yellows = 0
         arquivoSaida = open('srTCM-{}-{}-{}.csv'.format(rate, bucketF_max_size, bucketS_max_size), 'w')
 
 clientSocket = pp.socketStart(client_interface)
