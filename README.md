@@ -40,7 +40,7 @@
   "server-interface": " ",
   "debug": 1,
 
-#if color-aware mode:
+if color-aware mode:
   "color_aware": 1,
   "ca_bucketF_size": 500,
   "ca_bucketF_max_size": 1000,
@@ -71,7 +71,7 @@
   "server-interface": " ",
   "debug": 1,
 
-#if color-aware mode:
+if color-aware mode:
   "color_aware": 1,
   "ca_bucketF_size": 1000,
   "ca_bucketF_max_size": 1500,
