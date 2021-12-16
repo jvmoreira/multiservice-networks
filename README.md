@@ -39,8 +39,13 @@
   "client-interface": " ",
   "server-interface": " ",
   "debug": 1,
+}
+```
 
-if color-aware mode:
+if color-aware mode add:
+
+```JSON
+{
   "color_aware": 1,
   "ca_bucketF_size": 500,
   "ca_bucketF_max_size": 1000,
@@ -70,8 +75,13 @@ if color-aware mode:
   "client-interface": " ",
   "server-interface": " ",
   "debug": 1,
+}
+```
 
-if color-aware mode:
+if color-aware mode add:
+
+```JSON
+{
   "color_aware": 1,
   "ca_bucketF_size": 1000,
   "ca_bucketF_max_size": 1500,
