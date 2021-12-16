@@ -8,13 +8,17 @@ def saveInfos():
 
     saida = '{}__{}'.format(n_transmitted, n_dropped)
     arquivoSaida.write(saida)
-    arquivoSaida.close() 
+    arquivoSaida.close()
+    semaphore.release()
+    exit() 
 
 def thread_Time(thread_name, interval):
     global semaphore, rate, bucket_size, bucket_max_size
     while 1:
         semaphore.acquire()
         bucket_size =  bucket_size + rate if bucket_size + rate <= bucket_max_size else bucket_max_size
+        if debug:
+            if pp.numberPacketsProcessed(n_transmitted, n_dropped, 500): exit()
         semaphore.release()
         time.sleep(interval)
 
@@ -31,12 +35,12 @@ def thread_TokenBucket():
                 if debug: 
                     print("Mensagem dropada")
                     n_dropped += 1
-                    if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
+                    if pp.numberPacketsProcessed(n_transmitted, n_dropped, 500): saveInfos()
             else:
                 if debug: 
                     print("Transmitindo pacote")
                     n_transmitted += 1
-                    if pp.numberPacketsProcessed(n_transmitted, n_dropped, 300): saveInfos()
+                    if pp.numberPacketsProcessed(n_transmitted, n_dropped, 500): saveInfos()
                 serverSocket.send(contentReceived)
                 bucket_size -= packet_size
             semaphore.release()

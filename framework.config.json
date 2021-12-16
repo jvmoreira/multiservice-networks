@@ -6,6 +6,6 @@
   "bucket_max_size": 30,
   "interval": 0.3,
   "client_interface": "'wlp0s20f3'",
-  "server_interface": "'enp7s0'",
+  "server_interface": "'wlp0s20f3'",
   "debug": 1
 }

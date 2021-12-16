@@ -71,8 +71,8 @@ def packetDelay(last, now):
 
 def numberPacketsProcessed(n_transmitted, n_dropped, max_processed):
     total =  n_transmitted + n_dropped
-    print (total)
-    if total == max_processed:
+    #print (total)
+    if total >= max_processed:
         return 1
     return 0
 
