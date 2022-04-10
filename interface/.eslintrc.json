@@ -1,0 +1,64 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "ignorePatterns": ["dist"],
+  "rules": {
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
+    "eol-last": ["error", "always"],
+    "no-trailing-spaces": ["error"],
+    "no-else-return": "off",
+    "unicode-bom": ["error", "never"],
+    "linebreak-style": ["error", "unix"],
+    "no-multiple-empty-lines": ["error", {
+      "max": 2,
+      "maxEOF": 1,
+      "maxBOF": 0
+    }],
+    "no-unused-vars": "off",
+    "@typescript-eslint/semi": ["error", "always"],
+    "@typescript-eslint/no-unused-vars": ["error", {
+      "vars": "all",
+      "args": "none",
+      "ignoreRestSiblings": false
+    }],
+    "@typescript-eslint/explicit-function-return-type": ["error"],
+    "@typescript-eslint/member-delimiter-style": ["error", {
+      "multiline": {
+        "delimiter": "comma",
+        "requireLast": true
+      },
+      "singleline": {
+        "delimiter": "comma",
+        "requireLast": false
+      }
+    }]
+  }
+}
