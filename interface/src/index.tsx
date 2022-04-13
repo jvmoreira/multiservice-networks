@@ -1,8 +1,11 @@
 import React, { ReactElement } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { FormController } from '@/components/form-controller';
 
 function App(): ReactElement {
-  return <h1>Hello World!</h1>;
+  return <FormController />;
 }
 
-render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);
