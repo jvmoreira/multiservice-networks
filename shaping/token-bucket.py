@@ -4,6 +4,7 @@ import socket
 import lib.packet_processing as pp
 
 def saveInfos():
+    """Funcao que salva as informacoes obtidas pelo algoritmo em um arquivo .csv de saida"""
     global n_dropped, n_transmitted, arquivoSaida, n_delay
 
     saida = '{}__{}__{}'.format(n_transmitted, n_dropped, n_delay)
@@ -13,6 +14,7 @@ def saveInfos():
     exit() 
 
 def consumeQueue():
+    """Funcao que consome a fila de pacotes em espera quando ha disponibilidade de tokens"""
     global queue, serverSocket, bucket_size, debug,  n_transmitted, n_delay, sum_delay, queue_transmissions
     sentQueue = 0
     if (len(queue) == 0):
@@ -38,6 +40,8 @@ def consumeQueue():
             sentQueue = 1
 
 def thread_Time(thread_name, interval):
+    """ Thread que adiciona tokens aos buckets a cada intervalo de tempo
+        interval -> intervalo de tempo para que sejam adicionados os tokens"""
     global semaphore, rate, bucket_size, bucket_max_size
     while 1: #Ver condicao do while
         semaphore.acquire()
@@ -49,7 +53,7 @@ def thread_Time(thread_name, interval):
         time.sleep(interval)
 
 def thread_TokenBucket():
-#Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
+    """ Thread do TokenBucketShaper que ao receber um pacote enfileira, transmite ou descarta o pacote, de acordo com seus parametros"""
     global clientSocket, serverSocket, bucket_size, semaphore, bucket_max_size, queue, queue_max_size, debug, n_transmitted, n_dropped, n_received
 
     while 1:

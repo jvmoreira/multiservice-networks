@@ -4,6 +4,7 @@ import socket
 import lib.packet_processing as pp
 
 def saveInfosCA():
+    """Funcao que salva as informacoes obtidas pelo algoritmo em um arquivo .csv de saida quando color-aware ativo"""
     global semaphore_ca, ca_n_dropped, ca_n_transmitted, arquivoSaida, greenToRed, yellowToRed, greenToYellow, n_Reds, n_Yellows, n_Greens
 
     saida = '{}__{}__{}__{}__{}__{}__{}__{}'.format(ca_n_transmitted, ca_n_dropped, n_Reds, n_Yellows, n_Greens, greenToRed, yellowToRed, greenToYellow)
@@ -13,6 +14,7 @@ def saveInfosCA():
     exit()
 
 def saveInfos():
+    """Funcao que salva as informacoes obtidas pelo algoritmo em um arquivo .csv de saida quando color-aware inativo"""
     global semaphore_srTCM, n_dropped, n_transmitted, arquivoSaida, n_Reds, n_Yellows, n_Greens
 
     saida = '{}__{}__{}__{}__{}'.format(n_transmitted, n_dropped, n_Reds, n_Yellows, n_Greens)
@@ -22,6 +24,10 @@ def saveInfos():
     exit()
 
 def colorAware(contentReceived, color):
+    """ Funcao de color-aware que recebe um pacote pre-colorido e verifica se essa coloracao esta correta de acordo com seus parametros
+        contentReceived -> conteudo do pacote
+        color -> pre-coloracao
+    """
     global semaphore_ca, ca_bucketF_size, ca_bucketS_size, ca_dropped, serverSocket, n_Reds, n_Yellows, n_Greens, ca_n_transmitted, ca_n_dropped, greenToRed, yellowToRed, greenToYellow, color_awares
 
     packet_size = pp.ipPacketSize(contentReceived)
@@ -79,11 +85,14 @@ def colorAware(contentReceived, color):
     exit()
 
 def colorAwareBucketRate():
+    """Funcao que adiciona tokens aos buckets relacionados ao color-aware mode"""
     global ca_bucketF_size, ca_bucketS_size, ca_rate, ca_bucketF_max_size, ca_bucketS_max_size
     ca_bucketF_size = ca_bucketF_size + ca_rate if ca_bucketF_size + ca_rate <= ca_bucketF_max_size else ca_bucketF_max_size
     ca_bucketS_size = ca_bucketS_size + ca_rate if ca_bucketS_size + ca_rate <= ca_bucketS_max_size else ca_bucketS_max_size
 
 def thread_Time(thread_name, interval):
+    """ Thread que adiciona tokens aos buckets a cada intervalo de tempo
+        interval -> intervalo de tempo para que sejam adicionados os tokens"""
     global semaphore_srTCM, rate, bucketF_size, bucketF_max_size, bucketS_size, bucketS_max_size
     while 1: #Ver condicao do while
         semaphore_srTCM.acquire()
@@ -101,6 +110,8 @@ def thread_Time(thread_name, interval):
         time.sleep(interval)
 
 def thread_OneRateThreeColor():
+    """ Thread do OneRateThreeColor que ao receber um pacote, verifica qual sera a coloracao do mesmo de acordo com seus parametros, realizando a acao correspondente
+    """
 #Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
     global clientSocket, serverSocket, bucketF_size, semaphore_srTCM, bucketS_size, dropped, debug, n_transmitted, n_dropped, n_Reds, n_Yellows, n_Greens, color_awares
     

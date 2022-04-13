@@ -4,6 +4,7 @@ import socket
 import lib.packet_processing as pp
 
 def consumeBucket():
+    """Funcao que consome o bucket de acordo com a quantidade de pacotes que sao consumidos a cada intervao de tempo"""
     global bucket, packets_to_release, serverSocket, debug, n_transmitted#, last_number_message_transmitted, n_delay, sum_delay
     if (len(bucket) == 0):
         return
@@ -17,6 +18,8 @@ def consumeBucket():
         packets_to_release -= 1
 
 def thread_Time(thread_name, interval):
+    """ Thread que reseta o consumo do bucket a cada intervalo de tempo
+        interval -> intervalo de tempo para que sejam adicionados os tokens"""
     global semaphore, packets_to_release, packets_to_release_value
     while 1: #Ver condicao do while
         semaphore.acquire()
@@ -28,6 +31,7 @@ def thread_Time(thread_name, interval):
         time.sleep(interval)
 
 def saveInfos():
+    """Funcao que salva as informacoes obtidas pelo algoritmo em um arquivo .csv de saida"""
     global n_dropped, n_transmitted, arquivoSaida
 
     saida = '{}__{}'.format(n_transmitted, n_dropped)
@@ -37,7 +41,7 @@ def saveInfos():
     exit()  
 
 def thread_LeakyBucket():
-#Funcao que quando chega pacote e nao tem pacotes na fila entao envia ou adiciona na fila
+    """ Thread do LeakyBucket que ao receber um pacote enfileira, transmite ou descarta o pacote, de acordo com seus parametros"""
     global clientSocket, serverSocket, packets_to_release, bucket, semaphore, bucket_max_size, debug, n_delay, n_dropped, n_transmitted, last_number_message_transmitted
 
     while 1:
