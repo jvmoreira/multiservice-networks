@@ -6,11 +6,12 @@ interface FormInputProps {
   name: string,
   value?: string,
   type?: HTMLInputTypeAttribute,
+  checked?: boolean,
   placeholder?: string,
   onChange: ChangeHandler,
 }
 
-export function FormInput({ type, name, value, label, placeholder, onChange }: FormInputProps): ReactElement {
+export function FormInput({ type, name, value, label, checked, placeholder, onChange }: FormInputProps): ReactElement {
   return (
     <div className="form-input">
       <label className="form-input__label" htmlFor={name}>{ label }</label>
@@ -21,6 +22,7 @@ export function FormInput({ type, name, value, label, placeholder, onChange }: F
         name={name}
         value={value}
         placeholder={placeholder}
+        checked={checked}
         onChange={onChange}
       />
     </div>
