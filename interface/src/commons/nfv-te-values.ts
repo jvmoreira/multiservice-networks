@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useState } from 'react';
-import { StateUpdater } from '@/commons/change-handler';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { StateUpdater } from './change-handler';
 
 export enum NfvTeCategory {
   UNSELECTED = '',
@@ -15,7 +15,7 @@ export enum NfvTeFunction {
   TWO_RATE_THREE_COLOR = 'two-rate-three-color',
 }
 
-type NfvTeFunctionParameters = Record<string, number>;
+export type NfvTeFunctionParameters = Record<string, string>;
 
 export interface NfvTeValues {
   category: NfvTeCategory,
@@ -47,14 +47,32 @@ export function useNfvTeValue<Key extends keyof NfvTeValues>(
   key: Key,
 ): [NfvTeValues[Key], StateUpdater<NfvTeValues[Key]>] {
   const { nfvTeValues, setNfvTeValues } = useNfvTeValuesContext();
-  const setNfvTeValue = useCallback((newValue: unknown) => {
+  const nfvTeValue = useMemo(() => nfvTeValues[key], [nfvTeValues, key]);
+
+  const setNfvTeValue = useCallback<StateUpdater<NfvTeValues[Key]>>((newValue) => {
     setNfvTeValues((currentValues) => ({
       ...currentValues,
-      [key]: newValue,
+      [key]: (typeof newValue === 'function') ? newValue(currentValues[key]) : newValue,
     }));
   }, [key, setNfvTeValues]);
 
-  return [nfvTeValues[key], setNfvTeValue];
+  return [nfvTeValue, setNfvTeValue];
+}
+
+export function useNfvTeFunctionParameters<T extends NfvTeFunctionParameters>(): [T, StateUpdater<T>] {
+  return useNfvTeValue('functionParameters') as any as [T, StateUpdater<T>];
+}
+
+export function useSetNfvTeFunctionParameter<P extends NfvTeFunctionParameters, Key extends keyof P>(
+  key: Key,
+  setNfvTeFunctionParameters: StateUpdater<P>,
+): StateUpdater<P[Key]> {
+  return useCallback<StateUpdater<P[Key]>>((newValue) => {
+    setNfvTeFunctionParameters((currentParameters) => ({
+      ...currentParameters,
+      [key]: (typeof newValue === 'function') ? newValue(currentParameters[key]) : newValue,
+    }));
+  }, [setNfvTeFunctionParameters, key]);
 }
 
 const defaultNfvTeValues: NfvTeValues = {
