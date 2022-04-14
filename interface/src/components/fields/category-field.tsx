@@ -1,11 +1,18 @@
-import React, { ReactElement } from 'react';
-import { FormSelect } from '@/components/form-select';
-import { NfvTeCategory, useNfvTeValue } from '@/commons/nfv-te-values';
-import { useChangeHandler } from '@/commons/change-handler';
+import React, { ReactElement, useCallback } from 'react';
+import { NfvTeCategory, NfvTeFunction, useNfvTeValue } from '@/commons/nfv-te-values';
+import { StateUpdater, useChangeHandler } from '@/commons/change-handler';
+import { FormSelect } from '../form-select';
 
 export function CategoryField(): ReactElement {
   const [category, setCategory] = useNfvTeValue('category');
-  const onCategoryChange = useChangeHandler(setCategory);
+  const [, setFunctionName] = useNfvTeValue('functionName');
+
+  const setCategoryAndResetFunctionName = useCallback<StateUpdater<NfvTeCategory>>((newValue) => {
+    setCategory(newValue);
+    setFunctionName(NfvTeFunction.UNSELECTED);
+  }, [setCategory, setFunctionName]);
+
+  const onCategoryChange = useChangeHandler(setCategoryAndResetFunctionName);
 
   return (
     <FormSelect label="Categoria de Função de Rede" name="category" value={category} onChange={onCategoryChange}>
