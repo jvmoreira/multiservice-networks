@@ -8,10 +8,10 @@ export function TokenBucketPolicerMaxSizeField(props: TokenBucketPolicerParamete
   const { tokenBucketPolicerParameters, setTokenBucketPolicerParameters } = props;
 
   const tokenBucketPolicerMaxSize = useMemo(() => {
-    return tokenBucketPolicerParameters.bucketMaxSize || '';
+    return tokenBucketPolicerParameters.bucket_max_size || '';
   }, [tokenBucketPolicerParameters]);
 
-  const setTokenBucketPolicerMaxSize = useSetNfvTeFunctionParameter('bucketMaxSize', setTokenBucketPolicerParameters);
+  const setTokenBucketPolicerMaxSize = useSetNfvTeFunctionParameter('bucket_max_size', setTokenBucketPolicerParameters);
   const onTokenBucketPolicerMaxSizeChangeHandler = useChangeHandler(setTokenBucketPolicerMaxSize);
 
   return (

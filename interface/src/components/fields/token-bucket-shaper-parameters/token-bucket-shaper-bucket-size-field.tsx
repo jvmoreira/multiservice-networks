@@ -8,10 +8,10 @@ export function TokenBucketShaperBucketSizeField(props: TokenBucketShaperParamet
   const { tokenBucketShaperParameters, setTokenBucketShaperParameters } = props;
 
   const tokenBucketShaperBucketSize = useMemo(() => {
-    return tokenBucketShaperParameters.bucketSize || '';
+    return tokenBucketShaperParameters.bucket_size || '';
   }, [tokenBucketShaperParameters]);
 
-  const setTokenBucketShaperBucketSize = useSetNfvTeFunctionParameter('bucketSize', setTokenBucketShaperParameters);
+  const setTokenBucketShaperBucketSize = useSetNfvTeFunctionParameter('bucket_size', setTokenBucketShaperParameters);
   const onTokenBucketShaperBucketSizeChangeHandler = useChangeHandler(setTokenBucketShaperBucketSize);
 
   return (

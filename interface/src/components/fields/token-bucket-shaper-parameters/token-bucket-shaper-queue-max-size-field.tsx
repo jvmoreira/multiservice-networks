@@ -8,10 +8,10 @@ export function TokenBucketShaperQueueMaxSizeField(props: TokenBucketShaperParam
   const { tokenBucketShaperParameters, setTokenBucketShaperParameters } = props;
 
   const tokenBucketShaperQueueMaxSize = useMemo(() => {
-    return tokenBucketShaperParameters.queueMaxSize || '';
+    return tokenBucketShaperParameters.queue_max_size || '';
   }, [tokenBucketShaperParameters]);
 
-  const setTokenBucketShaperQueueMaxSize = useSetNfvTeFunctionParameter('queueMaxSize', setTokenBucketShaperParameters);
+  const setTokenBucketShaperQueueMaxSize = useSetNfvTeFunctionParameter('queue_max_size', setTokenBucketShaperParameters);
   const onTokenBucketShaperQueueMaxSizeChangeHandler = useChangeHandler(setTokenBucketShaperQueueMaxSize);
 
   return (

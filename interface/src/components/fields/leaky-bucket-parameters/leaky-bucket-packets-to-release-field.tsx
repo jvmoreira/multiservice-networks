@@ -7,8 +7,8 @@ import { LeakyBucketParameterFieldProps } from './leaky-bucket-parameters';
 export function LeakyBucketPacketsToReleaseField(props: LeakyBucketParameterFieldProps): ReactElement {
   const { leakyBucketParameters, setLeakyBucketParameters } = props;
 
-  const leakyBucketPacketsToRelease = useMemo(() => leakyBucketParameters.packetsToRelease || '', [leakyBucketParameters]);
-  const setLeakyBucketPacketsToRelease = useSetNfvTeFunctionParameter('packetsToRelease', setLeakyBucketParameters);
+  const leakyBucketPacketsToRelease = useMemo(() => leakyBucketParameters.packets_to_release || '', [leakyBucketParameters]);
+  const setLeakyBucketPacketsToRelease = useSetNfvTeFunctionParameter('packets_to_release', setLeakyBucketParameters);
   const onLeakyBucketPacketsToReleaseChangeHandler = useChangeHandler(setLeakyBucketPacketsToRelease);
 
   return (

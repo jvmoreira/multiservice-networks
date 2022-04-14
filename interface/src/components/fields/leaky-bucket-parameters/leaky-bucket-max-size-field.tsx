@@ -7,8 +7,8 @@ import { LeakyBucketParameterFieldProps } from './leaky-bucket-parameters';
 export function LeakyBucketMaxSizeField(props: LeakyBucketParameterFieldProps): ReactElement {
   const { leakyBucketParameters, setLeakyBucketParameters } = props;
 
-  const leakyBucketMaxSize = useMemo(() => leakyBucketParameters.bucketMaxSize || '', [leakyBucketParameters]);
-  const setLeakyBucketMaxSize = useSetNfvTeFunctionParameter('bucketMaxSize', setLeakyBucketParameters);
+  const leakyBucketMaxSize = useMemo(() => leakyBucketParameters.bucket_max_size || '', [leakyBucketParameters]);
+  const setLeakyBucketMaxSize = useSetNfvTeFunctionParameter('bucket_max_size', setLeakyBucketParameters);
   const onLeakyBucketMaxSizeChangeHandler = useChangeHandler(setLeakyBucketMaxSize);
 
   return (

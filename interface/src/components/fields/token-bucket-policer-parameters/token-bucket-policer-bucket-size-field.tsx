@@ -8,10 +8,10 @@ export function TokenBucketPolicerBucketSizeField(props: TokenBucketPolicerParam
   const { tokenBucketPolicerParameters, setTokenBucketPolicerParameters } = props;
 
   const tokenBucketPolicerBucketSize = useMemo(() => {
-    return tokenBucketPolicerParameters.bucketSize || '';
+    return tokenBucketPolicerParameters.bucket_size || '';
   }, [tokenBucketPolicerParameters]);
 
-  const setTokenBucketPolicerBucketSize = useSetNfvTeFunctionParameter('bucketSize', setTokenBucketPolicerParameters);
+  const setTokenBucketPolicerBucketSize = useSetNfvTeFunctionParameter('bucket_size', setTokenBucketPolicerParameters);
   const onTokenBucketPolicerBucketSizeChangeHandler = useChangeHandler(setTokenBucketPolicerBucketSize);
 
   return (

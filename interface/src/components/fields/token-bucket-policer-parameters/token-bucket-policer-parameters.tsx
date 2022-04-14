@@ -8,8 +8,8 @@ import { TokenBucketPolicerRateField } from './token-bucket-policer-rate-field';
 
 type TokenBucketPolicerParameters = {
   rate: string,
-  bucketSize: string,
-  bucketMaxSize: string,
+  bucket_size: string,
+  bucket_max_size: string,
   interval: string,
 };
 
@@ -57,8 +57,8 @@ function useSetTokenBucketPolicerInitialParameters(
   useEffect(() => {
     setTokenBucketPolicerParameters({
       rate: '',
-      bucketSize: '',
-      bucketMaxSize: '',
+      bucket_size: '',
+      bucket_max_size: '',
       interval: '',
     });
   }, [setTokenBucketPolicerParameters]);

@@ -6,8 +6,8 @@ import { LeakyBucketMaxSizeField } from './leaky-bucket-max-size-field';
 import { LeakyBucketPacketsToReleaseField } from './leaky-bucket-packets-to-release-field';
 
 type LeakyBucketParameters = {
-  packetsToRelease: string,
-  bucketMaxSize: string,
+  packets_to_release: string,
+  bucket_max_size: string,
   interval: string,
 };
 
@@ -44,8 +44,8 @@ export interface LeakyBucketParameterFieldProps {
 function useSetLeakyBucketInitialParameters(setLeakyBucketParameters: StateUpdater<LeakyBucketParameters>): void {
   useEffect(() => {
     setLeakyBucketParameters({
-      packetsToRelease: '',
-      bucketMaxSize: '',
+      packets_to_release: '',
+      bucket_max_size: '',
       interval: '',
     });
   }, [setLeakyBucketParameters]);

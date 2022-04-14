@@ -9,10 +9,10 @@ import { TokenBucketShaperQueueMaxSizeField } from './token-bucket-shaper-queue-
 
 type TokenBucketShaperParameters = {
   rate: string,
-  bucketSize: string,
-  bucketMaxSize: string,
+  bucket_size: string,
+  bucket_max_size: string,
   interval: string,
-  queueMaxSize: string,
+  queue_max_size: string,
 };
 
 export function TokenBucketShaperParameters(): ReactElement {
@@ -64,10 +64,10 @@ function useSetTokenBucketShaperInitialParameters(
   useEffect(() => {
     setTokenBucketShaperParameters({
       rate: '',
-      bucketSize: '',
-      bucketMaxSize: '',
+      bucket_size: '',
+      bucket_max_size: '',
       interval: '',
-      queueMaxSize: '',
+      queue_max_size: '',
     });
   }, [setTokenBucketShaperParameters]);
 }
