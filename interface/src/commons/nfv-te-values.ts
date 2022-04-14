@@ -23,7 +23,7 @@ export interface NfvTeValues {
   functionParameters: NfvTeFunctionParameters,
   clientInterface: string,
   serverInterface: string,
-  debug?: 1,
+  debug: 1 | 0,
 }
 
 interface NfvTeValuesContextType {
@@ -81,4 +81,5 @@ const defaultNfvTeValues: NfvTeValues = {
   functionParameters: {},
   clientInterface: '',
   serverInterface: '',
+  debug: 0,
 };

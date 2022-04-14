@@ -1,14 +1,15 @@
 import React, { Fragment, FunctionComponent, ReactElement } from 'react';
-import { CategoryField } from '@/components/fields/category-field';
-import { FunctionNameField } from '@/components/fields/function-name-field';
-import { ClientInterfaceField } from '@/components/fields/client-interface-field';
-import { ServerInterfaceField } from '@/components/fields/server-interface-field';
 import { NfvTeCategory, NfvTeFunction, useNfvTeValue } from '@/commons/nfv-te-values';
+import { CategoryField } from './fields/category-field';
+import { FunctionNameField } from './fields/function-name-field';
+import { ClientInterfaceField } from './fields/client-interface-field';
+import { ServerInterfaceField } from './fields/server-interface-field';
 import { TwoRateThreeColorParameters } from './fields/two-rate-three-color-parameters';
-import { TokenBucketPolicerParameters } from '@/components/fields/token-bucket-policer-parameters';
-import { SingleRateThreeColorParameters } from '@/components/fields/single-rate-three-color-parameters';
-import { TokenBucketShaperParameters } from '@/components/fields/token-bucket-shaper-parameters';
-import { LeakyBucketParameters } from '@/components/fields/leaky-bucket-parameters';
+import { TokenBucketPolicerParameters } from './fields/token-bucket-policer-parameters';
+import { SingleRateThreeColorParameters } from './fields/single-rate-three-color-parameters';
+import { TokenBucketShaperParameters } from './fields/token-bucket-shaper-parameters';
+import { LeakyBucketParameters } from './fields/leaky-bucket-parameters';
+import { DebugField } from './fields/debug-field';
 
 export function Form(): ReactElement {
   const [category] = useNfvTeValue('category');
@@ -24,6 +25,7 @@ export function Form(): ReactElement {
 
       <ClientInterfaceField />
       <ServerInterfaceField />
+      <DebugField />
     </form>
   );
 }
