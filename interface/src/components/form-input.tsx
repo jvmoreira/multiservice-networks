@@ -13,7 +13,7 @@ interface FormInputProps {
 
 export function FormInput({ type, name, value, label, checked, placeholder, onChange }: FormInputProps): ReactElement {
   return (
-    <div className="form-input">
+    <div className={`form-input${type === 'checkbox' ? ' form-input--checkbox' : ''}`}>
       <label className="form-input__label" htmlFor={name}>{ label }</label>
       <input
         className="form-input__input"

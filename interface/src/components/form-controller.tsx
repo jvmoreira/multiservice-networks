@@ -9,6 +9,7 @@ export function FormController(): ReactElement {
 
   return (
     <NfvTeValuesContextProvider value={{ nfvTeValues, setNfvTeValues }}>
+      <h1>Framework NFV-TE</h1>
       <main>
         <Form />
         <Display value={formattedNfvTeValues} />
@@ -24,15 +25,13 @@ function formatNfvTeValues(nfvTeValues: NfvTeValues): string {
       return acc;
     }
 
-    return `${acc}\n  "${paramName}": ${paramValue},`;
-  }, '');
+    return `${acc}  "${paramName}": ${paramValue},\n`;
+  }, '\n');
 
   return `{
   "category": "${nfvTeValues.category}",
   "function": "${nfvTeValues.functionName}",
-
 ${functionParameters}
-
   "client-interface": "${nfvTeValues.clientInterface}",
   "server-interface": "${nfvTeValues.serverInterface}",
   "debug": ${nfvTeValues.debug},

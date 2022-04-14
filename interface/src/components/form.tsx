@@ -20,7 +20,9 @@ export function Form(): ReactElement {
 
   return (
     <section id="form-section">
-      <form onSubmit={onSubmit} style={{ display: 'flex', flexFlow: 'column' }}>
+      <form onSubmit={onSubmit}>
+        <h3>Definição dos Parâmetros</h3>
+
         <CategoryField />
         <FunctionNameField />
 
