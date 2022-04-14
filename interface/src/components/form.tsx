@@ -1,4 +1,4 @@
-import React, { Fragment, FunctionComponent, ReactElement } from 'react';
+import React, { FormEvent, Fragment, FunctionComponent, ReactElement, useCallback } from 'react';
 import { NfvTeCategory, NfvTeFunction, useNfvTeValue } from '@/commons/nfv-te-values';
 import { CategoryField } from './fields/category-field';
 import { FunctionNameField } from './fields/function-name-field';
@@ -16,8 +16,10 @@ export function Form(): ReactElement {
   const [functionName] = useNfvTeValue('functionName');
   const NfvTeFunctionParametersComponent = resolveNfvTeFunctionParametersComponent(category, functionName);
 
+  const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
+
   return (
-    <form style={{ display: 'flex', flexFlow: 'column', maxWidth: '500px', margin: 'auto' }}>
+    <form onSubmit={onSubmit} style={{ display: 'flex', flexFlow: 'column' }}>
       <CategoryField />
       <FunctionNameField />
 
