@@ -19,16 +19,18 @@ export function Form(): ReactElement {
   const onSubmit = useCallback((evt: FormEvent) => evt.preventDefault(), []);
 
   return (
-    <form onSubmit={onSubmit} style={{ display: 'flex', flexFlow: 'column' }}>
-      <CategoryField />
-      <FunctionNameField />
+    <section id="form-section">
+      <form onSubmit={onSubmit} style={{ display: 'flex', flexFlow: 'column' }}>
+        <CategoryField />
+        <FunctionNameField />
 
-      <NfvTeFunctionParametersComponent />
+        <NfvTeFunctionParametersComponent />
 
-      <ClientInterfaceField />
-      <ServerInterfaceField />
-      <DebugField />
-    </form>
+        <ClientInterfaceField />
+        <ServerInterfaceField />
+        <DebugField />
+      </form>
+    </section>
   );
 }
 
