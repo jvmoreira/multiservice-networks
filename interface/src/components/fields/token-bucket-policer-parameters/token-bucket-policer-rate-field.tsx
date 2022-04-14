@@ -17,7 +17,7 @@ export function TokenBucketPolicerRateField(props: TokenBucketPolicerParameterFi
   return (
     <FormInput
       label="Taxa de Reposição"
-      name="interval"
+      name="rate"
       value={tokenBucketPolicerRate}
       placeholder="Valor de tokens adicionados a cada intervalo"
       onChange={onTokenBucketPolicerRateChangeHandler}

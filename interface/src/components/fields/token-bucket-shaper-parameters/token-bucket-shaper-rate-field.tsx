@@ -17,7 +17,7 @@ export function TokenBucketShaperRateField(props: TokenBucketShaperParameterFiel
   return (
     <FormInput
       label="Taxa de Reposição"
-      name="interval"
+      name="rate"
       value={tokenBucketShaperRate}
       placeholder="Valor de tokens adicionados a cada intervalo"
       onChange={onTokenBucketShaperRateChangeHandler}
