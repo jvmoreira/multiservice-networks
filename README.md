@@ -15,8 +15,8 @@
   "bucket_size": 100,
   "bucket_max_size": 200,
   "interval": 0.5,
-  "client-interface": " ",
-  "server-interface": " ",
+  "client_interface": " ",
+  "server_interface": " ",
   "debug": 1
 }
 ```
@@ -36,8 +36,8 @@
   "bucketS_size": 2000,
   "bucketS_max_size": 4000,
   "interval": 1,
-  "client-interface": " ",
-  "server-interface": " ",
+  "client_interface": " ",
+  "server_interface": " ",
   "debug": 1,
 }
 ```
@@ -72,8 +72,8 @@ if color-aware mode add:
   "bucketS_size": 1500,
   "bucketS_max_size": 3000,
   "interval": 1.0,
-  "client-interface": " ",
-  "server-interface": " ",
+  "client_interface": " ",
+  "server_interface": " ",
   "debug": 1,
 }
 ```
@@ -107,8 +107,8 @@ if color-aware mode add:
   "bucket_max_size": 200,
   "interval": 0.5,
   "queue_max_size": 25,
-  "client-interface": " ",
-  "server-interface": " ",
+  "client_interface": " ",
+  "server_interface": " ",
   "debug": 1
 }
 ```
@@ -125,8 +125,8 @@ if color-aware mode add:
   "packets_to_release": 3,
   "bucket_max_size": 30,
   "interval": 0.3,
-  "client-interface": " ",
-  "server-interface": " ",
+  "client_interface": " ",
+  "server_interface": " ",
   "debug": 1
 }
 ```
