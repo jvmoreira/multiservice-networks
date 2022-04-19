@@ -32,8 +32,8 @@ function formatNfvTeValues(nfvTeValues: NfvTeValues): string {
   "category": "${nfvTeValues.category}",
   "function": "${nfvTeValues.functionName}",
 ${functionParameters}
-  "client-interface": "'${nfvTeValues.clientInterface}'",
-  "server-interface": "'${nfvTeValues.serverInterface}'",
+  "client_interface": "'${nfvTeValues.clientInterface}'",
+  "server_interface": "'${nfvTeValues.serverInterface}'",
   "debug": ${nfvTeValues.debug}
 }\n`;
 }
