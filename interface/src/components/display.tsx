@@ -11,7 +11,7 @@ export function Display({ value }: { value: string }): ReactElement {
         {value}
 
         <span id="action-icons">
-          <CopyButton valueBlob={valueBlob} />
+          <CopyButton value={value} />
           <DownloadButton valueBlob={valueBlob} />
         </span>
       </pre>
@@ -19,7 +19,7 @@ export function Display({ value }: { value: string }): ReactElement {
   );
 }
 
-function CopyButton({ valueBlob }: { valueBlob: Blob }): ReactElement {
+function CopyButton({ value }: { value: string }): ReactElement {
   const [fillColor, setFillColor] = useState('currentColor');
   const showCopyFeedback = useCallback(() => {
     setFillColor('#6fc56a');
@@ -27,12 +27,11 @@ function CopyButton({ valueBlob }: { valueBlob: Blob }): ReactElement {
   }, [setFillColor]);
 
   const copyHandler = useCallback(() => {
-    const item = new ClipboardItem({ [valueBlob.type]: valueBlob });
     (async (): Promise<void> => {
-      await navigator.clipboard.write([item]);
+      await navigator.clipboard.writeText(value);
       showCopyFeedback();
     })();
-  }, [showCopyFeedback, valueBlob]);
+  }, [showCopyFeedback, value]);
 
   return (
     <svg viewBox="0 0 24 24" onClick={copyHandler}>
